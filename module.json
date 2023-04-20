@@ -1,0 +1,32 @@
+{
+  "title": "Combat GPT",
+  "version": "0.0.1",
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+  ],
+  "compatibility": {
+    "minimum": "10",
+    "verified": "10"
+  },
+  "url": "",
+  "manifest": "",
+  "download": "",
+  "id": "combat-gpt",
+  "authors": [
+    {
+      "name": "ZoltanTheDM",
+      "flags": {}
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system",
+        "compatibility": {}
+      }
+    ]
+  }
+}

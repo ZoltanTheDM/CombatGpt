@@ -1,13 +1,19 @@
-const VERBOSE = true;
+const VERBOSE = false;
 
 class D{
 
 static DescriptionFunctions = [
 	{priority: 20, func: D.saveHit},
 	{priority: 20, func: D.saveMiss},
-	{priority: 10, func: D.hitSingle},
+	// {priority: 10, func: D.hitSingle},
 	{priority: 5,  func: D.hit},
 	{priority: 5,  func: D.missed},
+	{priority: 1,  func: D.useItem},
+];
+
+static CharacterDescriptionFunctions = [
+	{priority: 20, func: D.DamageTaken},
+	{priority: 20, func: D.HealTaken},
 ];
 
 static actorObject(actor){
@@ -95,34 +101,34 @@ static joinTargetNames(targets){
 	return `${targets.slice(0, targets.length - 1).map(t => t.name).join(', ')} and, ${targets[targets.length - 1].name}`;
 }
 
-static hitSingle(workflow){
-	if (VERBOSE){
-		console.log("hitSingle")
-	}
+// static hitSingle(workflow){
+// 	if (VERBOSE){
+// 		console.log("hitSingle")
+// 	}
 
-	let damageRolled = workflow.damageRollCount > 0;
+// 	let damageRolled = workflow.damageRollCount > 0;
 
-	if (damageRolled && workflow.damageList.length == 1 && workflow.hitTargets.size == 1){
-		let target = workflow.hitTargets.values().next().value.actor;
-		let dmg = workflow.damageList[0];
+// 	if (damageRolled && workflow.damageList.length == 1 && workflow.hitTargets.size == 1){
+// 		let target = workflow.hitTargets.values().next().value.actor;
+// 		let dmg = workflow.damageList[0];
 
-		let ciritcalString = ""
-		if (workflow.isCritical){
-			ciritcalString = "critically "
-		}
+// 		let ciritcalString = ""
+// 		if (workflow.isCritical){
+// 			ciritcalString = "critically "
+// 		}
 
-		let damagePercent = Math.round(dmg.appliedDamage / target.system.attributes.hp.max * 100);
-		let remainPercent = Math.round(dmg.newHP / target.system.attributes.hp.max * 100);
+// 		let damagePercent = Math.round(dmg.appliedDamage / target.system.attributes.hp.max * 100);
+// 		let remainPercent = Math.round(dmg.newHP / target.system.attributes.hp.max * 100);
 
-		return [
-			[{
-				id: workflow.id,
-				description:`${workflow.actor.name} ${ciritcalString}hits ${target.name} with ${workflow.item.name} doing ${damagePercent}% of the targets health, leaving it with ${remainPercent}% health left`
-			}],
-			[D.actorObject(workflow.actor), D.actorObject(target), D.itemObject(workflow.item)]]
-	}
+// 		return [
+// 			[{
+// 				id: workflow.id,
+// 				description:`${workflow.actor.name} ${ciritcalString}hits ${target.name} with ${workflow.item.name} doing ${damagePercent}% of the targets health, leaving it with ${remainPercent}% health left`
+// 			}],
+// 			[D.actorObject(workflow.actor), D.actorObject(target), D.itemObject(workflow.item)]]
+// 	}
 
-}
+// }
 
 //A detail for 
 static saveHit(workflow){
@@ -160,6 +166,58 @@ static saveMiss(workflow){
 	}
 }
 
+static useItem(workflow){
+	if (VERBOSE){
+		console.log("Use Item")
+	}
+
+	return [
+		[{
+			id: workflow.id,
+			description:`${workflow.actor.name} uses ${workflow.item.name}`
+		}],
+		[D.actorObject(workflow.actor), D.itemObject(workflow.item)]
+	]
+}
+
+static DamageTaken(actor, delta){
+	if (VERBOSE){
+		console.log("DamageTaken")
+	}
+
+	if (delta?.dhp < 0){
+		const damagePercent = Math.round(-delta.dhp / actor.system.attributes.hp.max * 100);
+		const remainPercent = Math.round(actor.system.attributes.hp.value / actor.system.attributes.hp.max * 100);
+
+		return [[{
+			id: tempId++,
+			description:`${actor.name} loses ${damagePercent}% of its health, leaving it with ${remainPercent}% health left`
+		}],[
+			D.actorObject(actor)
+		]]
+	}
+}
+
+static HealTaken(actor, delta){
+	if (VERBOSE){
+		console.log("HealTaken")
+	}
+
+	if (delta?.dhp > 0){
+		const damagePercent = Math.round(delta.dhp / actor.system.attributes.hp.max * 100);
+		const remainPercent = Math.round(actor.system.attributes.hp.value / actor.system.attributes.hp.max * 100);
+
+		return [[{
+			id: tempId++,
+			description:`${actor.name} gains ${damagePercent}% of its health, health is now at ${remainPercent}%`
+		}],[
+			D.actorObject(actor)
+		]]
+	}
+}
+
 };
+
+let tempId = 0;
 
 export default D;

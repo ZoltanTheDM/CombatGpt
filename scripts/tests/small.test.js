@@ -17,7 +17,8 @@ test('itemObject', () => {
 const testCharacter = {
 	uuid:"111",
 	name: "Dude",
-	system:{details:{biography: {value: "Some Description 2"}}}
+	system:{details:{biography: {value: "Some Description 2"}}},
+	id: "111"
 }
 
 test('characterObject', () => {
@@ -29,15 +30,16 @@ test('characterObject', () => {
 });
 
 test("Join Taget Names" , ()=>{
-	expect(D.joinTargetNames([{name: "Jo"}]) ).toBe("Jo");
-	expect(D.joinTargetNames([{name: "Jo"}, {name: "Bob"}]) ).toBe("Jo and Bob");
-	expect(D.joinTargetNames([{name: "Jo"}, {name: "Bob"}, {name: "Norton"}]) ).toBe("Jo, Bob and, Norton");
+	expect(D.joinTargetNames([{name: "Jo", id:"01"}]) ).toBe("Jo (01)");
+	expect(D.joinTargetNames([{name: "Jo", id:"01"}, {name: "Bob", id:"02"}]) ).toBe("Jo (01) and Bob (02)");
+	expect(D.joinTargetNames([{name: "Jo", id:"1"}, {name: "Bob", id:"2"}, {name: "Norton", id:"3"}]) ).toBe("Jo (1), Bob (2) and, Norton (3)");
 	expect(D.joinTargetNames([])).toBe("ERROR");
 });
 
 function getWorkflow(updates={}){
 	const boring = {
 		actor: testCharacter,
+		token: testCharacter,
 		item: testItem,
 		attackRollCount: 0,
 		hitTargets: new Set(),
@@ -73,19 +75,19 @@ const testCharacter2 = {
 	system:{
 		details:{biography: {value: "Some Description 3"}},
 		attributes:{hp:{max: 10}}
-	}
+	},
 }
 
 test("Test Missing Workflow" , ()=>{
 	const testWorkflowMiss = getWorkflow({
-		targets: new Set([{actor: testCharacter2, name: testCharacter2.name}]),
+		targets: new Set([{actor: testCharacter2, name: testCharacter2.name, id:testCharacter2.uuid}]),
 		attackRollCount: 1,
 	})
 
 	const missedLog = D.missed(testWorkflowMiss)
 
 	expect(missedLog).not.toBe(undefined)
-	expect(missedLog[0][0].description).toBe("Dude misses Dudette with Thing")
+	expect(missedLog[0][0].description).toBe("Dude (111) misses Dudette (112) with Thing")
 	expect(missedLog[1].length).toBe(3)
 
 	expect(D.hit(testWorkflowMiss)).toBe(undefined)
@@ -96,8 +98,8 @@ test("Test Missing Workflow" , ()=>{
 
 test("Test hit workflow", ()=>{
 	const testWorkflowHit = getWorkflow({
-		targets: new Set([{actor: testCharacter2, name: testCharacter2.name}]),
-		hitTargets: new Set([{actor: testCharacter2, name: testCharacter2.name}]),
+		targets: new Set([{actor: testCharacter2, name: testCharacter2.name, id:testCharacter2.uuid}]),
+		hitTargets: new Set([{actor: testCharacter2, name: testCharacter2.name, id:testCharacter2.uuid}]),
 		attackRollCount: 1,
 		damageRollCount: 1,
 	})
@@ -105,7 +107,7 @@ test("Test hit workflow", ()=>{
 	const HitLog = D.hit(testWorkflowHit)
 
 	expect(HitLog).not.toBe(undefined)
-	expect(HitLog[0][0].description).toBe("Dude hits Dudette with Thing")
+	expect(HitLog[0][0].description).toBe("Dude (111) hits Dudette (112) with Thing")
 
 	// expect(D.hitSingle(testWorkflowHit)).toBe(undefined)
 	expect(D.missed(testWorkflowHit)).toBe(undefined)

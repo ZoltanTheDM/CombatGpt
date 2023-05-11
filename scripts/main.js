@@ -111,6 +111,7 @@ async function discriptionGrabber(){
 		}
 	}
 	else{
+		// await new Promise(resolve => setTimeout(resolve, 1000));
 		text = desc.text
 		pushHistory(text);
 	}

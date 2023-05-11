@@ -1,6 +1,6 @@
 {
   "title": "Combat GPT",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "esmodules": [
     "scripts/main.js"
   ],
@@ -26,6 +26,12 @@
         "id": "dnd5e",
         "type": "system",
         "compatibility": {}
+      }
+    ],
+    "requires": [
+      {
+        "id": "midi-qol",
+        "type": "module"
       }
     ]
   }

@@ -1,5 +1,9 @@
 const VERBOSE = false;
 
+function idNames(actor){
+	return `${actor.name} (${actor.id})`
+}
+
 class D{
 
 static DescriptionFunctions = [
@@ -49,7 +53,7 @@ static missed(workflow){
 		return [
 			[{
 				id: workflow.id,
-				description:`${workflow.actor.name} misses ${D.joinTargetNames(targets)} with ${workflow.item.name}`,
+				description:`${idNames(workflow.token)} misses ${D.joinTargetNames(targets)} with ${workflow.item.name}`,
 			}],
 			[D.actorObject(workflow.actor), D.itemObject(workflow.item)].concat(targetObjects)
 		]
@@ -76,7 +80,7 @@ static hit(workflow){
 		return [
 			[{
 				id: workflow.id,
-				description:`${workflow.actor.name} ${ciritcalString}hits ${D.joinTargetNames(targets)} with ${workflow.item.name}`
+				description:`${idNames(workflow.token)} ${ciritcalString}hits ${D.joinTargetNames(targets)} with ${workflow.item.name}`
 			}],
 			[D.actorObject(workflow.actor), D.itemObject(workflow.item)].concat(targetObjects)
 		]
@@ -91,14 +95,14 @@ static joinTargetNames(targets){
 	}
 
 	if (targets.length == 1){
-		return targets[0].name;
+		return idNames(targets[0]);
 	}
 	
 	if (targets.length == 2){
-		return `${targets[0].name} and ${targets[1].name}`
+		return `${idNames(targets[0])} and ${idNames(targets[1])}`
 	}
 
-	return `${targets.slice(0, targets.length - 1).map(t => t.name).join(', ')} and, ${targets[targets.length - 1].name}`;
+	return `${targets.slice(0, targets.length - 1).map(t => idNames(t)).join(', ')} and, ${idNames(targets[targets.length - 1])}`;
 }
 
 // static hitSingle(workflow){
@@ -141,7 +145,7 @@ static saveHit(workflow){
 		return [
 			[{
 				id: workflow.id,
-				description:`${target.name} gets hit by ${workflow.item.name} from ${workflow.actor.name}`
+				description:`${idNames(target)} gets hit by ${workflow.item.name} from ${idNames(workflow.token)}`
 			}],
 			[D.actorObject(workflow.actor), D.actorObject(target), D.itemObject(workflow.item)]]
 	}
@@ -154,14 +158,14 @@ static saveMiss(workflow){
 	}
 
 	if (workflow.saves.size == 1 && workflow.targets.size == 1 && workflow.failedSaves.size == 0 && workflow.saveResults.length > 0){
-		let target = workflow.hitTargets.values().next().value.actor;
+		let target = workflow.hitTargets.values().next().value.token;
 
 		return [
 			[{
 				id: workflow.id,
-				description:`${target.name} saves against ${workflow.item.name} from ${workflow.actor.name}`
+				description:`${idNames(target)} saves against ${workflow.item.name} from ${idNames(workflow.token)}`
 			}],
-			[D.actorObject(workflow.actor), D.actorObject(target), D.itemObject(workflow.item)]
+			[D.actorObject(workflow.token), D.actorObject(target), D.itemObject(workflow.item)]
 		]
 	}
 }
@@ -174,7 +178,7 @@ static useItem(workflow){
 	return [
 		[{
 			id: workflow.id,
-			description:`${workflow.actor.name} uses ${workflow.item.name}`
+			description:`${idNames(workflow.token)} uses ${workflow.item.name}`
 		}],
 		[D.actorObject(workflow.actor), D.itemObject(workflow.item)]
 	]
@@ -191,7 +195,7 @@ static DamageTaken(actor, delta){
 
 		return [[{
 			id: tempId++,
-			description:`${actor.name} loses ${damagePercent}% of its health, leaving it with ${remainPercent}% health left`
+			description:`${idNames(actor)} loses ${damagePercent}% of its health, leaving it with ${remainPercent}% health left`
 		}],[
 			D.actorObject(actor)
 		]]
@@ -209,7 +213,7 @@ static HealTaken(actor, delta){
 
 		return [[{
 			id: tempId++,
-			description:`${actor.name} gains ${damagePercent}% of its health, health is now at ${remainPercent}%`
+			description:`${idNames(actor)} gains ${damagePercent}% of its health, health is now at ${remainPercent}%`
 		}],[
 			D.actorObject(actor)
 		]]

@@ -72,3 +72,6 @@ export const registerSettings = () => {
 // 	return game.settings.get(moduleName, 'gamePrompt').trim() ||
 // 		gameSystems[game.settings.get(moduleName, 'gameSystem')].prompt;
 // }
+
+export const VERBOSE = false;
+export const TESTING = false;

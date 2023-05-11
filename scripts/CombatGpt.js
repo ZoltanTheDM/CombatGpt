@@ -129,15 +129,15 @@ class GptSession {
 		return new Iterator()
 	}
 
-	addObject(obj){
-		if (!(obj.name in this.describedObjects)){
-			this.describedObjects[obj.name] = {
-				name: obj.name,
-				description: obj.description,
-				shown: false,
-			};
-		}
-	}
+	// addObject(obj){
+	// 	if (!(obj.name in this.describedObjects)){
+	// 		this.describedObjects[obj.name] = {
+	// 			name: obj.name,
+	// 			description: obj.description,
+	// 			shown: false,
+	// 		};
+	// 	}
+	// }
 
 	addScene(scene){
 
@@ -152,13 +152,15 @@ class GptSession {
 			return;
 		}
 
-		this.addObject({
-			id: "scene",
+		this.addSceneText(page.text.content, scene)
+	}
+
+	addSceneText(sceneText, scene={}){
+		this.describedObjects["scene"] = {
 			name: "Scene",
-			description: page.text.content,
-			data: scene,
+			description: sceneText,
 			shown: false,
-		})
+		};
 	}
 
 	addAction(actionString){
@@ -194,6 +196,10 @@ class GptSession {
 			Object.keys(val).forEach(a => {acc[a] = val[a];});
 			return acc;
 		}, {});
+
+		for (const [key, desc] of Object.entries(this.describedObjects)){
+			description += `${desc.name}:<div>${desc.description}</div>\n`
+		}
 
 		for (const [key, desc] of Object.entries(glossary)){
 			description += `${desc.name}:<div>${desc.description}</div>\n`

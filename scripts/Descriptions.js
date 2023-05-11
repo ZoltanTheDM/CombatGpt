@@ -1,4 +1,4 @@
-const VERBOSE = false;
+import { VERBOSE } from './settings.js';
 
 function idNames(actor){
 	return `${actor.name} (${actor.id})`
@@ -158,14 +158,14 @@ static saveMiss(workflow){
 	}
 
 	if (workflow.saves.size == 1 && workflow.targets.size == 1 && workflow.failedSaves.size == 0 && workflow.saveResults.length > 0){
-		let target = workflow.hitTargets.values().next().value.token;
+		let target = workflow.hitTargets.values().next().value;
 
 		return [
 			[{
 				id: workflow.id,
 				description:`${idNames(target)} saves against ${workflow.item.name} from ${idNames(workflow.token)}`
 			}],
-			[D.actorObject(workflow.token), D.actorObject(target), D.itemObject(workflow.item)]
+			[D.actorObject(workflow.actor), D.actorObject(target.actor), D.itemObject(workflow.item)]
 		]
 	}
 }

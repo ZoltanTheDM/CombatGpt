@@ -32,6 +32,10 @@
       {
         "id": "midi-qol",
         "type": "module"
+      },
+      {
+        "id": "_chatcommands",
+        "type": "module"
       }
     ]
   }

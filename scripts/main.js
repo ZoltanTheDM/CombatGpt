@@ -1,9 +1,7 @@
-import { registerSettings, moduleName } from './settings.js';
+import { registerSettings, moduleName, VERBOSE, TESTING } from './settings.js';
 import { getGptReplyAsHtml } from './gpt-api.js';
 import GptSession from "./CombatGpt.js"
 import { pushHistory } from './history.js';
-
-const VERBOSE = false;
 
 Hooks.once('init', () => {
 	console.log(`${moduleName} | Initialization`);
@@ -92,8 +90,6 @@ Hooks.on("renderSidebarTab", async (app, html) => {
 	}
 })
 
-const TEST = false;
-
 async function discriptionGrabber(){
 
 	const desc = GptSession.session().getDescription()
@@ -109,7 +105,7 @@ async function discriptionGrabber(){
 
 	let text;
 
-	if (!TEST){
+	if (!TESTING){
 		try {
 			let output = await getGptReplyAsHtml(desc.text)
 			// console.log(output)
@@ -137,18 +133,51 @@ async function discriptionGrabber(){
 }
 
 function registerChatCommand(){
-	const data = {
+	const actionChatData = {
 		name: "/combatgptaction",
 		module: moduleName,
 		aliases: ["/cga"],
 		requiredRole: "GAMEMASTER",
-		callback: testChat,
+		callback: addActionChat,
 	}
-	game.chatCommands.register(data)
+
+	game.chatCommands.register(actionChatData)
+
+	const sceneChatData = {
+		name: "/combatgptscene",
+		module: moduleName,
+		aliases: ["/cgs"],
+		requiredRole: "GAMEMASTER",
+		callback: addSceneChat,
+	}
+
+	game.chatCommands.register(sceneChatData)
+
+	const resetData = {
+		name: "/combatgptreset",
+		module: moduleName,
+		aliases: ["/cgr"],
+		requiredRole: "GAMEMASTER",
+		callback: resetCombatChat,
+	}
+
+	game.chatCommands.register(resetData)
 }
 
-function testChat(chat, parameters, messageData){
-	// console.log(parameters)
+function addActionChat(chat, parameters, messageData){
 	GptSession.session().addAction(parameters)
+
+	return {}
+}
+
+function addSceneChat(chat, parameters, messageData){
+	GptSession.session().addSceneText(parameters)
+
+	return {}
+}
+
+function resetCombatChat(chat, parameters, messageData){
+	GptSession.session().resetSession()
+
 	return {}
 }

@@ -3,6 +3,8 @@ import { getGptReplyAsHtml } from './gpt-api.js';
 import GptSession from "./CombatGpt.js"
 import { pushHistory } from './history.js';
 
+const VERBOSE = false;
+
 Hooks.once('init', () => {
 	console.log(`${moduleName} | Initialization`);
 	registerSettings();
@@ -18,18 +20,20 @@ Hooks.on("combatStart", async (combat) => {
 });
 
 Hooks.on("updateActor", async (actor, changes, delta)=>{
-	console.log("Updated Actor");
-	console.log(actor, changes, delta);
+	if (VERBOSE){
+		console.log("Updated Actor");
+		console.log(actor, changes, delta);
+	}
 	GptSession.session().addCharacterUpdate(actor, delta);
 })
 
-Hooks.on("createCombatant", async (combatant, flags, id) => {
-	//Add combatant description to log
-	// console.log("Add Combatant to Log:")
-	// console.log(combatant)
+// Hooks.on("createCombatant", async (combatant, flags, id) => {
+// 	//Add combatant description to log
+// 	// console.log("Add Combatant to Log:")
+// 	// console.log(combatant)
 
-	// GptSession.session().addCharacter(combatant.actor);
-})
+// 	// GptSession.session().addCharacter(combatant.actor);
+// })
 
 
 Hooks.on("midi-qol.AttackRollComplete", async (workflow) => {
@@ -42,16 +46,19 @@ Hooks.on("midi-qol.AttackRollComplete", async (workflow) => {
 
 Hooks.on("midi-qol.DamageRollComplete", async (workflow) => {
 	//Add action description to log
-	console.log("Add Damage Roll to Log:")
-	console.log(workflow)
+	if (VERBOSE){
+		console.log("Add Damage Roll to Log:")
+		console.log(workflow)
+	}
+
 	GptSession.session().addWorkflow(workflow)
 })
 
-Hooks.on("midi-qol.damageApplied", async (workflow) => {
-	//Add action description to log
-	// console.log("Add Damage Applied to Log:")
-	// console.log(workflow)
-})
+// Hooks.on("midi-qol.damageApplied", async (workflow) => {
+// 	//Add action description to log
+// 	// console.log("Add Damage Applied to Log:")
+// 	// console.log(workflow)
+// })
 
 
 Hooks.on("midi-qol.RollComplete", async (workflow) => {
@@ -95,7 +102,9 @@ async function discriptionGrabber(){
 		return
 	}
 
-	console.log(desc.text)
+	if (VERBOSE){
+		console.log(desc.text)
+	}
 
 	let text;
 

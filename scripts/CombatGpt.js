@@ -45,7 +45,7 @@ class GptSession {
 			this.actions.set(action.id, {
 				description: action.description,
 				shown: false,
-				glossary: objects.reduce((a, v) => ({ ...a, [v.id]: v}), {})
+				glossary: objects.reduce((a, v) => ({ ...a, [v.name]: v}), {})
 			})
 		}
 
@@ -66,7 +66,7 @@ class GptSession {
 				this.actions.set(action.id, {
 					description: action.description,
 					shown: false,
-					glossary: objects.reduce((a, v) => ({ ...a, [v.id]: v}), {})
+					glossary: objects.reduce((a, v) => ({ ...a, [v.name]: v}), {})
 				})
 			}
 		}
@@ -130,8 +130,8 @@ class GptSession {
 	}
 
 	addObject(obj){
-		if (!(obj.id in this.describedObjects)){
-			this.describedObjects[obj.id] = {
+		if (!(obj.name in this.describedObjects)){
+			this.describedObjects[obj.name] = {
 				name: obj.name,
 				description: obj.description,
 				shown: false,

@@ -161,6 +161,14 @@ class GptSession {
 		})
 	}
 
+	addAction(actionString){
+		this.actions.set(randomID(), {
+			description: actionString,
+			shown: false,
+			glossary: [],
+		})
+	}
+
 	getDescription(){
 
 		const REMOVAL = true;
@@ -204,7 +212,7 @@ class GptSession {
 		}
 
 		description += "</CurrentActions>\n\n"
-		description += "Write a short theatrical description of the current actions. never use percentages."
+		description += "Write a theatrical description of the current actions. never use percentages."
 
 		return {text: description, good: true};
 	}

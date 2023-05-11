@@ -8,6 +8,7 @@ const VERBOSE = false;
 Hooks.once('init', () => {
 	console.log(`${moduleName} | Initialization`);
 	registerSettings();
+	registerChatCommand();
 });
 
 Hooks.on("combatStart", async (combat) => {
@@ -133,4 +134,21 @@ async function discriptionGrabber(){
 		whisper: [game.user.id],
 		sound: CONFIG.sounds.notification,
 	});
+}
+
+function registerChatCommand(){
+	const data = {
+		name: "/combatgptaction",
+		module: moduleName,
+		aliases: ["/cga"],
+		requiredRole: "GAMEMASTER",
+		callback: testChat,
+	}
+	game.chatCommands.register(data)
+}
+
+function testChat(chat, parameters, messageData){
+	// console.log(parameters)
+	GptSession.session().addAction(parameters)
+	return {}
 }

@@ -20,6 +20,11 @@ static CharacterDescriptionFunctions = [
 	{priority: 20, func: D.HealTaken},
 ];
 
+static UpdateDescriptionFunctions = [
+	{priority: 20, func: D.NewEffect},
+	{priority: 20, func: D.RemoveEffect},
+]
+
 static actorObject(actor){
 	return {
 		id: actor.uuid,
@@ -216,6 +221,36 @@ static HealTaken(actor, delta){
 			description:`${idNames(actor)} gains ${damagePercent}% of its health, health is now at ${remainPercent}%`
 		}],[
 			D.actorObject(actor)
+		]]
+	}
+}
+
+static NewEffect(effect, created){
+	if (VERBOSE){
+		console.log("New Effect");
+	}
+
+	if (created){
+		return [[{
+			id: tempId++,
+			description: `${idNames(effect.parent)} gained the effect ${effect.label}`
+		}],[
+			D.actorObject(effect.parent)
+		]]
+	}
+}
+
+static RemoveEffect(effect, created){
+	if (VERBOSE){
+		console.log("Lost Effect");
+	}
+
+	if (!created){
+		return [[{
+			id: tempId++,
+			description: `${idNames(effect.parent)} lost the effect ${effect.label}`
+		}],[
+			D.actorObject(effect.parent)
 		]]
 	}
 }

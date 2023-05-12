@@ -73,5 +73,5 @@ export const registerSettings = () => {
 // 		gameSystems[game.settings.get(moduleName, 'gameSystem')].prompt;
 // }
 
-export const VERBOSE = false;
+export const VERBOSE = true;
 export const TESTING = false;

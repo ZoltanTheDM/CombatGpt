@@ -26,6 +26,24 @@ Hooks.on("updateActor", async (actor, changes, delta)=>{
 	GptSession.session().addCharacterUpdate(actor, delta);
 })
 
+Hooks.on("createActiveEffect", async (effect, changes, id) => {
+	if (VERBOSE){
+		console.log("New Effect");
+		console.log(effect, changes, id);
+	}
+
+	GptSession.session().addEffectUpdate(effect, true)
+})
+
+Hooks.on("deleteActiveEffect", async (effect, changes, id) => {
+	if (VERBOSE){
+		console.log("Lost Effect");
+		console.log(effect, changes, id);
+	}
+
+	GptSession.session().addEffectUpdate(effect, false)
+})
+
 // Hooks.on("createCombatant", async (combatant, flags, id) => {
 // 	//Add combatant description to log
 // 	// console.log("Add Combatant to Log:")

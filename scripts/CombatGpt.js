@@ -52,7 +52,7 @@ class GptSession {
 	}
 
 	addCharacterUpdate(actor, delta){
-		let descriptions = GptSession.DescribeUpdates(actor, delta);
+		let descriptions = GptSession.DescribeCharacterUpdates(actor, delta);
 
 		if (!descriptions){
 			return;
@@ -73,7 +73,26 @@ class GptSession {
 
 	}
 
-	static DescribeUpdates(actor, delta){
+	addEffectUpdate(effect, created){
+		let descriptions = GptSession.DescribeEffectChange(effect, created);
+
+		if (!descriptions){
+			return;
+		}
+
+		let [actions, objects] = descriptions;
+
+		for (let action of actions){
+
+			this.actions.set(action.id, {
+				description: action.description,
+				shown: false,
+				glossary: objects.reduce((a, v) => ({ ...a, [v.name]: v}), {})
+			})
+		}
+	}
+
+	static DescribeCharacterUpdates(actor, delta){
 		for (let test of GptSession.getIterator(D.CharacterDescriptionFunctions)){
 			let potential = test(actor, delta);
 
@@ -88,6 +107,18 @@ class GptSession {
 	static DescribeWorkflow(workflow){
 		for (let test of GptSession.getIterator(D.DescriptionFunctions)){
 			let potential = test(workflow);
+
+			if (potential){
+				return potential
+			}
+		}
+
+		return;
+	}
+
+	static DescribeEffectChange(effect, created){
+		for (let test of GptSession.getIterator(D.UpdateDescriptionFunctions)){
+			let potential = test(effect, created);
 
 			if (potential){
 				return potential
